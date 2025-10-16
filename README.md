@@ -3,10 +3,9 @@
 ## Project Overview
 
 **Project Title**: Retail Sales Analysis  
-**Level**: Beginner  
-**Database**: `p1_retail_db`
+**Database**: `SQL_PROJECT_P10`
 
-This project is designed to demonstrate SQL skills and techniques typically used by data analysts to explore, clean, and analyze retail sales data. The project involves setting up a retail sales database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries. This project is ideal for those who are starting their journey in data analysis and want to build a solid foundation in SQL.
+This project is designed to demonstrate SQL skills and techniques typically used by data analysts to explore, clean, and analyze retail sales data. The project involves setting up a retail sales database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries. 
 
 ## Objectives
 
@@ -19,172 +18,290 @@ This project is designed to demonstrate SQL skills and techniques typically used
 
 ### 1. Database Setup
 
-- **Database Creation**: The project starts by creating a database named `p1_retail_db`.
+- **Database Creation**: The project starts by creating a database named `sql_project_p10`.
 - **Table Creation**: A table named `retail_sales` is created to store the sales data. The table structure includes columns for transaction ID, sale date, sale time, customer ID, gender, age, product category, quantity sold, price per unit, cost of goods sold (COGS), and total sale amount.
 
 ```sql
-CREATE DATABASE p1_retail_db;
+CREATE DATABASE sql_project_p10;
 
 CREATE TABLE retail_sales
-(
-    transactions_id INT PRIMARY KEY,
-    sale_date DATE,	
-    sale_time TIME,
-    customer_id INT,	
-    gender VARCHAR(10),
-    age INT,
-    category VARCHAR(35),
-    quantity INT,
-    price_per_unit FLOAT,	
-    cogs FLOAT,
-    total_sale FLOAT
-);
+			(		
+					transactions_id INT PRIMARY KEY,	
+					sale_date DATE,
+					sale_time TIME,
+					customer_id	INT,
+					gender	VARCHAR (15),
+					age	INT,
+					category VARCHAR (15),
+					quantiy	INT,
+					price_per_unit	FLOAT,
+					cogs	FLOAT,
+					total_sale FLOAT
+			)
+;
 ```
 
 ### 2. Data Exploration & Cleaning
 
+- **Create Duplicate**: Duplicate the data set 
 - **Record Count**: Determine the total number of records in the dataset.
 - **Customer Count**: Find out how many unique customers are in the dataset.
 - **Category Count**: Identify all unique product categories in the dataset.
 - **Null Value Check**: Check for any null values in the dataset and delete records with missing data.
 
+
+
+### i. Create Duplicate
+
 ```sql
-SELECT COUNT(*) FROM retail_sales;
-SELECT COUNT(DISTINCT customer_id) FROM retail_sales;
-SELECT DISTINCT category FROM retail_sales;
+-- CREATE DUPLICATE --
 
-SELECT * FROM retail_sales
-WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
+CREATE TABLE retail_sales_dup
+LIKE retail_sales;
 
-DELETE FROM retail_sales
+INSERT INTO retail_sales_dup
+SELECT *
+FROM retail_sales;
+
+SELECT *
+FROM retail_sales_dup;
+
+SELECT COUNT(*)
+FROM retail_sales_dup;
+```
+
+
+### ii. Data Cleaning
+
+```sql
+SELECT *
+FROM retail_sales_dup
 WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
+	transactions_id IS NULL
+    OR
+    sale_date IS NULL
+    OR
+    sale_time IS NULL
+    OR
+    customer_id IS NULL
+    OR
+    gender IS NULL
+    OR
+    category IS NULL
+    OR
+    quantiy IS NULL
+    OR
+    price_per_unit IS NULL
+    OR
+    cogs IS NULL
+    OR
+	total_sale IS NULL
+;
+
+DELETE
+FROM retail_sales_dup
+WHERE 
+	transactions_id IS NULL
+    OR
+    sale_date IS NULL
+    OR
+    sale_time IS NULL
+    OR
+    customer_id IS NULL
+    OR
+    gender IS NULL
+    OR
+    category IS NULL
+    OR
+    quantiy IS NULL
+    OR
+    price_per_unit IS NULL
+    OR
+    cogs IS NULL
+    OR
+	total_sale IS NULL
+;
 ```
 
 ### 3. Data Analysis & Findings
 
 The following SQL queries were developed to answer specific business questions:
 
-1. **Write a SQL query to retrieve all columns for sales made on '2022-11-05**:
+1. **WRITE A SQL QUERY TO RETRIEVE ALL COLUMNS FOR SALES MADE ON '2022-11-05**:
 ```sql
 SELECT *
-FROM retail_sales
-WHERE sale_date = '2022-11-05';
-```
-
-2. **Write a SQL query to retrieve all transactions where the category is 'Clothing' and the quantity sold is more than 4 in the month of Nov-2022**:
-```sql
-SELECT 
-  *
-FROM retail_sales
-WHERE 
-    category = 'Clothing'
-    AND 
-    TO_CHAR(sale_date, 'YYYY-MM') = '2022-11'
-    AND
-    quantity >= 4
-```
-
-3. **Write a SQL query to calculate the total sales (total_sale) for each category.**:
-```sql
-SELECT 
-    category,
-    SUM(total_sale) as net_sale,
-    COUNT(*) as total_orders
-FROM retail_sales
-GROUP BY 1
-```
-
-4. **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category.**:
-```sql
-SELECT
-    ROUND(AVG(age), 2) as avg_age
-FROM retail_sales
-WHERE category = 'Beauty'
-```
-
-5. **Write a SQL query to find all transactions where the total_sale is greater than 1000.**:
-```sql
-SELECT * FROM retail_sales
-WHERE total_sale > 1000
-```
-
-6. **Write a SQL query to find the total number of transactions (transaction_id) made by each gender in each category.**:
-```sql
-SELECT 
-    category,
-    gender,
-    COUNT(*) as total_trans
-FROM retail_sales
-GROUP 
-    BY 
-    category,
-    gender
-ORDER BY 1
-```
-
-7. **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**:
-```sql
-SELECT 
-       year,
-       month,
-    avg_sale
 FROM 
-(    
-SELECT 
-    EXTRACT(YEAR FROM sale_date) as year,
-    EXTRACT(MONTH FROM sale_date) as month,
-    AVG(total_sale) as avg_sale,
-    RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
-FROM retail_sales
-GROUP BY 1, 2
-) as t1
-WHERE rank = 1
+	retail_sales_dup
+WHERE 
+	sale_date = '2022-11-05';
 ```
 
-8. **Write a SQL query to find the top 5 customers based on the highest total sales **:
+2. **WRITE A SQL QUERY TO RETRIEVE ALL TRANSACTION WHERE THE CATEGORY IS  'CLOTHING' AND THE QUANTITY SOLD IS 4 OR MORE IN THE MONTH OF NOV-2022**:
+```sql
+SELECT *
+FROM retail_sales_dup
+WHERE 
+	category = 'clothing'
+AND 
+	quantiy >= 4
+AND 
+	sale_date LIKE '2022-11%'
+;
+```
+
+3. **WRITE A SQL QUERY TO CALCULATE THE TOTAL_SALE FOR EACH CATEGORY**:
 ```sql
 SELECT 
-    customer_id,
-    SUM(total_sale) as total_sales
-FROM retail_sales
-GROUP BY 1
-ORDER BY 2 DESC
+	category, 
+	SUM(total_sale) as net_sale,
+    COUNT(*)
+FROM retail_sales_dup
+GROUP BY category;
+```
+
+4. **WRITE A SQL QUERY TO FIND THE AVERAGE AGE OF CUSTOMERS WHO PURCHASED ITEMS FROM THE 'BEAUTY' CATEGORY.**:
+```sql
+SELECT 
+	ROUND(AVG(age),2) AS AVG_AGE
+FROM 
+	retail_sales_dup
+WHERE 
+	category = 'beauty';
+```
+
+5. **WRITE A SQL QUERY TO FIND ALL TRANSACTION WHERE THE TOTAL SALES IS GREATER THAN 1000.**:
+```sql
+SELECT *
+FROM 
+	retail_sales_dup
+WHERE 
+	total_sale > 1000;
+```
+
+6. **WRITE A SQL QUERY TO FIND THE TOTAL NUMBER OF TRANSACTION (TRANSACTION_ID) MADE BY EACH GENDER IN EACH CATEGORY**:
+```sql
+SELECT 
+	category, 
+	gender, 
+	COUNT(transactions_id)
+FROM retail_sales_dup
+GROUP BY 
+	category,
+	gender
+ORDER BY 1;
+```
+
+7. **WRITE A SQL QUERY TO CALCULATE THE AVERAGE SALE FOR EACH MONTH. FIND OUT BEST SELLING MONTH TO EACH YEAR**:
+```sql
+WITH t1 AS
+(
+SELECT 
+	SUBSTRING(sale_date, 1,4) AS `YEAR`,
+    SUBSTRING(sale_date, 6,2) AS `MONTH`, 
+	ROUND(AVG(total_sale),2) AS avg_sales,
+    RANK () OVER(PARTITION BY SUBSTRING(sale_date, 1,4) ORDER BY AVG(total_sale) DESC) AS ranking 
+FROM 
+	retail_sales_dup
+GROUP BY 
+	`YEAR`,`MONTH`
+ORDER BY 
+	`YEAR`, avg_sales DESC
+)
+SELECT *
+FROM 
+	t1
+WHERE 
+	ranking = 1 ;
+```
+
+8. **WRITE A SQL QUERY TO FIND THE TOP 5 CUSTOMERS BASED ON THE BIGGEST TOTAL SALES**:
+```sql
+SELECT 
+	customer_id, 
+	SUM(total_sale) AS total_sale,
+	RANK () OVER (ORDER BY SUM(total_sale) DESC) AS ranking
+FROM 
+	retail_sales_dup
+GROUP BY 
+	customer_id
 LIMIT 5
+;
 ```
 
-9. **Write a SQL query to find the number of unique customers who purchased items from each category.**:
+9. **WRITE A SQL QUERY TO FIND THE NUMBER OF UNIQUE CUSTOMERS WHO PURCHASED ITEMS FROM EACH CATEGORY**:
 ```sql
 SELECT 
-    category,    
-    COUNT(DISTINCT customer_id) as cnt_unique_cs
-FROM retail_sales
-GROUP BY category
+	category,
+    COUNT(DISTINCT customer_id) AS unique_customer
+FROM
+	retail_sales_dup
+GROUP BY 
+	category;
 ```
 
-10. **Write a SQL query to create each shift and number of orders (Example Morning <12, Afternoon Between 12 & 17, Evening >17)**:
+10. **WRITE A SQL QUERY TO CREATE EACH SHIFT AND NUMBER OF ORDERS (EXAMPLE MORNING <= 12, AFTERNOON BETWEEN 12 & 17, EVENING >17)**:
 ```sql
 WITH hourly_sale
-AS
-(
+AS (
 SELECT *,
-    CASE
-        WHEN EXTRACT(HOUR FROM sale_time) < 12 THEN 'Morning'
-        WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
-        ELSE 'Evening'
-    END as shift
-FROM retail_sales
+CASE
+	WHEN SUBSTRING(sale_time,1,2) < 12 THEN 'Morning'
+    WHEN SUBSTRING(sale_time,1,2) BETWEEN 12 AND 17 THEN 'Afternoon'
+    ELSE 'Evening'
+END as shift
+FROM retail_sales_dup
 )
 SELECT 
-    shift,
-    COUNT(*) as total_orders    
-FROM hourly_sale
-GROUP BY shift
+	shift, COUNT(*)
+FROM 
+	hourly_sale
+GROUP BY 
+	shift
+;
+```
+
+11. **WRITE A SQL QUERY STATING THE BEST SELLING CATEGORY BY YEAR USING TOTAL_SALE**
+```sql
+SELECT 
+	SUBSTRING(sale_date, 1,4) `YEAR`, 
+    SUM(total_sale) SALES
+FROM 
+	retail_sales_dup
+GROUP BY 
+	`YEAR`
+ORDER BY 
+	SALES DESC ;
+```
+12. **WRITE A SQL QUERY SHOWING top 5 CUSTOMER THAT SPENT MOST MONEY PER CATEGORY**
+```sql
+WITH best_cus AS (
+SELECT 
+	category,
+	customer_id, 
+	SUM(total_sale) AS BESTCUS_PRICE,
+    RANK () OVER(PARTITION BY category ORDER BY SUM(total_sale) DESC) AS Ranking
+FROM 
+	retail_sales_dup
+GROUP BY 
+	category, 
+    customer_id
+)
+SELECT *
+FROM best_cus
+WHERE Ranking <= 5
+;
+```
+13. **WRITE A SQL QUERY THAT STATE THE TOP 5 OVERALL BEST CUSTOMER**
+```sql
+SELECT 
+	customer_id, 
+	SUM(total_sale) AS SALES,
+    RANK () OVER (ORDER BY SUM(total_sale) DESC) AS Ranking
+FROM 
+	retail_sales_dup
+GROUP BY 
+	customer_id
+LIMIT 5;
 ```
 
 ## Findings
@@ -211,7 +328,7 @@ This project serves as a comprehensive introduction to SQL for data analysts, co
 3. **Run the Queries**: Use the SQL queries provided in the `analysis_queries.sql` file to perform your analysis.
 4. **Explore and Modify**: Feel free to modify the queries to explore different aspects of the dataset or answer additional business questions.
 
-## Author - Zero Analyst
+## Author - Alpha-Analyst
 
 This project is part of my portfolio, showcasing the SQL skills essential for data analyst roles. If you have any questions, feedback, or would like to collaborate, feel free to get in touch!
 
@@ -219,9 +336,8 @@ This project is part of my portfolio, showcasing the SQL skills essential for da
 
 For more content on SQL, data analysis, and other data-related topics, make sure to follow me on social media and join our community:
 
-- **YouTube**: [Subscribe to my channel for tutorials and insights](https://www.youtube.com/@zero_analyst)
-- **Instagram**: [Follow me for daily tips and updates](https://www.instagram.com/zero_analyst/)
-- **LinkedIn**: [Connect with me professionally](https://www.linkedin.com/in/najirr)
-- **Discord**: [Join our community to learn and grow together](https://discord.gg/36h5f2Z5PK)
+- **MAIL**: adebowaledamilaredebo@gmail.com
+- **ALL_SOCIALS**: Alpha-Analyst
+
 
 Thank you for your support, and I look forward to connecting with you!
